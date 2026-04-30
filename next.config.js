@@ -2,14 +2,14 @@ module.exports = (phase, { defaultConfig }) => {
   /**
    * @type {import('next').NextConfig}
    */
-   typescript: {
-    ignoreBuildErrors: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
-  }, 
-  
   const nextConfig = {
+    typescript: {
+      ignoreBuildErrors: true
+    },
+    eslint: {
+      ignoreDuringBuilds: true
+    },
+
     webpack: (config, options) => {
       config.module.rules.push(
         {
@@ -19,24 +19,19 @@ module.exports = (phase, { defaultConfig }) => {
         },
         {
           test: /\.gif$/,
-          // yay for webpack 5
-          // https://webpack.js.org/guides/asset-management/#loading-images
           type: 'asset/resource'
         }
       )
-      // for old ocean.js, most likely can be removed later on
+
       config.plugins.push(
         new options.webpack.IgnorePlugin({
           resourceRegExp: /^electron$/
         })
       )
+
       const fallback = config.resolve.fallback || {}
+
       Object.assign(fallback, {
-        // crypto: require.resolve('crypto-browserify'),
-        // stream: require.resolve('stream-browserify'),
-        // assert: require.resolve('assert'),
-        // os: require.resolve('os-browserify'),
-        // url: require.resolve('url'),
         http: require.resolve('stream-http'),
         https: require.resolve('https-browserify'),
         fs: false,
@@ -47,6 +42,7 @@ module.exports = (phase, { defaultConfig }) => {
         tls: false,
         net: false
       })
+
       config.resolve.fallback = fallback
 
       config.plugins = (config.plugins || []).concat([
@@ -55,10 +51,12 @@ module.exports = (phase, { defaultConfig }) => {
           Buffer: ['buffer', 'Buffer']
         })
       ])
+
       return typeof defaultConfig.webpack === 'function'
         ? defaultConfig.webpack(config, options)
         : config
     },
+
     async redirects() {
       return [
         {
@@ -69,8 +67,6 @@ module.exports = (phase, { defaultConfig }) => {
       ]
     }
 
-    // Prefer loading of ES Modules over CommonJS
-    // https://nextjs.org/blog/next-11-1#es-modules-support
     // experimental: { esmExternals: true }
   }
 
