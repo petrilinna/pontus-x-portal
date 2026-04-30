@@ -1,28 +1,19 @@
-FROM node:16
+FROM node:18
 
-# Create app directory
 WORKDIR /usr/src/app
 
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
 COPY package*.json ./
 
-# Bundle app source
+RUN npm config set fetch-retries 5 \
+ && npm config set fetch-retry-factor 2 \
+ && npm config set fetch-retry-mintimeout 20000 \
+ && npm config set fetch-retry-maxtimeout 120000 \
+ && npm install --legacy-peer-deps --no-audit --no-fund --ignore-scripts
+
 COPY . .
 
-#RUN apt-get update
-
-RUN npm install
-
-
-ENTRYPOINT npm run start
-
-# If you are building your code for production
-# RUN npm ci --only=production
-
-
-#RUN certbot certonly --webroot -w /usr/src/app/website --email jdavid@megatro.com --agree-tos --no-eff-email -d api.hash4life.com -d api.zertifier.com --preferred-challenges http --staging
-
+RUN npm run build
 
 EXPOSE 8000
+
+CMD ["npm", "start"]
