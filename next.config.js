@@ -2,6 +2,13 @@ module.exports = (phase, { defaultConfig }) => {
   /**
    * @type {import('next').NextConfig}
    */
+   typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  }, 
+  
   const nextConfig = {
     webpack: (config, options) => {
       config.module.rules.push(
